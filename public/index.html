@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Annotorious | Find Contours</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@recogito/annotorious@latest/dist/annotorious.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious@latest/dist/annotorious.min.js"></script>
+    <script type="module" src="opencv-4.5.5.js"></script>
+    <script type="module" src="../src/index.js"></script>
+    <style>
+      html, body {
+        padding:20px;
+        margin:0;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="map" src="vasques_07.jpg">
+
+    <script>
+      window.onload = function() {
+        var anno = Annotorious.init({
+          image: 'map'
+        });
+      }
+    </script>
+  </body>
+</html>

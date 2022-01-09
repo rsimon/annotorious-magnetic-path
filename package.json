@@ -1,0 +1,23 @@
+{
+  "name": "@recogito/annotorious-smart-lasso",
+  "version": "0.1.0",
+  "description": "A Smart Lasso selection tool plugin for Annotorious and Annotorious OpenSeadragon",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "parcel serve ./public/index.html",
+    "build": "parcel build ./public/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recogito/annotorious-smart-lasso.git"
+  },
+  "author": "Rainer Simon",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/recogito/annotorious-smart-lasso/issues"
+  },
+  "homepage": "https://github.com/recogito/annotorious-smart-lasso#readme",
+  "devDependencies": {
+    "parcel": "^2.1.1"
+  }
+}
