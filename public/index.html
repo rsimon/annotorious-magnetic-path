@@ -10,21 +10,35 @@
         padding:20px;
         margin:0;
       }
+
+      svg.a9s-annotationlayer {
+        pointer-events:none;
+      }
+
+      svg.a9s-annotationlayer .a9s-selection .a9s-inner,
+      svg.a9s-annotationlayer .a9s-annotation .a9s-inner  {
+        stroke-width:6;
+        stroke:#ff0000;
+      }
+
+      svg.a9s-annotationlayer .a9s-selection .a9s-outer,
+      svg.a9s-annotationlayer .a9s-annotation .a9s-outer  {
+        stroke-width:8;
+        stroke:rgba(0, 0, 0, 0.8);
+      }
     </style>
   </head>
   <body>
     <img id="map" src="vasques_07.jpg">
-    <canvas id="mapOut"></canvas>
 
     <script>
       window.onload = function() {
-        /*
         var anno = Annotorious.init({
-          image: 'map'
+          image: 'map',
+          readOnly: true
         });
-        */
 
-        Annotorious.SmartLasso();
+        Annotorious.SmartLasso(anno);
       }
     </script>
   </body>
