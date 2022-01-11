@@ -1,4 +1,4 @@
-# Annotorious Smart Lasso
+# Annotorious Magnetic Lasso
 
 A __Magnetic Lasso__ selection tool plugin for Annotorious and Annotorious OpenSeadragon.
 
