@@ -28,6 +28,7 @@
     "webpack-dev-server": "^4.7.2"
   },
   "dependencies": {
+    "@recogito/annotorious": "^2.7.1",
     "simplify-js": "^1.2.4"
   }
 }
