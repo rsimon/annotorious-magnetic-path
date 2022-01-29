@@ -27,9 +27,8 @@ export default class MagneticPolylineTool extends Tool {
     }
   }
 
-  onMouseMove = (x, y) => {
-
-  }
+  onMouseMove = (x, y) =>
+    this.rubberband.dragTo([x, y]);
 
   onMouseUp = () => {
 
