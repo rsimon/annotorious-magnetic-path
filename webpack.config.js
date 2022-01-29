@@ -10,8 +10,8 @@ const resolveAppPath = relativePath => path.resolve(APP_DIR, relativePath);
 module.exports = {
   entry: resolveAppPath('src'),
   output: {
-    filename: 'annotorious-smart-lasso.js',
-    library: ['Annotorious', 'SmartLasso'],
+    filename: 'annotorious-magnetic-polyline.js',
+    library: ['Annotorious', 'MagneticPolyline'],
     libraryTarget: 'umd',
     libraryExport: 'default'
   },
