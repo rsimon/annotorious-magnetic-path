@@ -1,11 +1,30 @@
+import simplify from 'simplify-js';
+
 import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 
 const CROSS_SIZE = 20;
 
+/**
+ * Helper: chunks an array (i.e array to array of arrays)	
+ */
+const chunk = (array, size) => {	
+  const chunked_arr = [];	
+
+  let index = 0;	
+  while (index < array.length) {	
+      chunked_arr.push(array.slice(index, size + index));	
+      index += size;	
+  }	
+
+  return chunked_arr;	
+}
+
 export default class MagneticPolyline {
 
-  constructor(originX, originY, g, env) {
-    this.origin = [ originX, originY ];
+  constructor(origin, scissors, g, env) {
+    this.origin = origin;
+
+    this.scissors = scissors;
 
     this.points = [];
 
@@ -41,9 +60,16 @@ export default class MagneticPolyline {
   }
 
   dragTo = xy => {
-    const x = xy[0] - CROSS_SIZE / 2;
-    const y = xy[1] - CROSS_SIZE / 2;
-    this.cross.setAttribute('transform', `translate(${x},${y})`);
+    const contour = new cv.Mat();
+    this.scissors.getContour(new cv.Point(xy[0], xy[1]), contour);
+
+    const points = chunk(contour.data32S, 2)
+      .map(xy => ({ x: xy[0], y: xy[1] }));
+    
+    const simplified = simplify(points, 1.0, true);
+
+    const { x, y } = simplified[simplified.length - 2];
+    this.cross.setAttribute('transform', `translate(${x - CROSS_SIZE / 2},${y - CROSS_SIZE / 2})`);
   }
 
 }

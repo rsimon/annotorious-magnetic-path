@@ -9,15 +9,33 @@ export default class MagneticPolylineTool extends Tool {
 
     // The 'rubberband' magnetic polyline
     this.rubberband = null;
+
+    // Init OpenCV magic
+    cv.onRuntimeInitialized = () => {
+      console.log('Initializing smart scissors');
+      const img = cv.imread(this.env.image);
+
+      this.scissors = new cv.segmentation_IntelligentScissorsMB();
+      this.scissors.setEdgeFeatureCannyParameters(32, 100);
+      this.scissors.setGradientMagnitudeMaxLimit(200);
+      this.scissors.applyImage(img);
+      console.log('Done.');
+    }
   }
 
   startDrawing = (x, y) => {
+    this.g.parentNode.style.cursor = 'none';
+
+    console.time('Building map');
+    this.scissors.buildMap(new cv.Point(x, y));
+    console.timeEnd('Building map');
+
     this.attachListeners({
       mouseMove: this.onMouseMove,
       mouseUp: this.onMouseUp
     });
 
-    this.rubberband = new MagneticPolyline(x, y, this.g, this.env);
+    this.rubberband = new MagneticPolyline([x, y], this.scissors, this.g, this.env);
   }
 
   stop = () => {
