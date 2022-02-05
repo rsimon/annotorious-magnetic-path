@@ -22,7 +22,12 @@ module.exports = {
     minimize: true
   },
   resolve: {
-    extensions: ['.js']
+    extensions: ['.js'],
+    fallback: {
+      fs: false,
+      path: false,
+      crypto: false
+    }
   },
   module: {
     rules: [

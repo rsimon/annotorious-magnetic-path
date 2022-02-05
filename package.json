@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "@recogito/annotorious": "^2.7.1",
+    "@techstark/opencv-js": "^4.5.4-release.1",
+    "jsfeat": "^0.0.8",
     "simplify-js": "^1.2.4"
   }
 }
