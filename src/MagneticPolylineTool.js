@@ -78,24 +78,6 @@ export default class MagneticPolylineTool extends Tool {
     console.log('Keypoints loaded'); 
   }
 
-  getClosestKeypoint = (x, y) => {
-    
-    // TODO optimize with a 2D index!
-
-    const dist = kp => 
-      Math.pow(kp.x - x, 2) + Math.pow(kp.y - y, 2);
-
-    if (this.keypoints.length > 0) {
-      const distances = this.keypoints.map(kp => {
-        const d = dist(kp);
-        return { ...kp, d };
-      });
-
-      distances.sort((a,b) => a.d - b.d);
-      return distances[0];
-    }
-  }
-
   startDrawing = (x, y) => {
     const w = this.env.image.naturalWidth;
     const h = this.env.image.naturalHeight;
@@ -148,7 +130,7 @@ export default class MagneticPolylineTool extends Tool {
       // this.rubberband.dragTo([x, y]);
     } else if (this.keypointIndex) {
       // Snap to closest keypoint
-      const closest = this.keypointIndex.neighbors(x, y, 1);
+      const closest = this.keypointIndex.neighbors(x, y, 1, 20);
       const snapped = closest.length > 0 && this.keypoints[closest[0]];
 
       this.crosshair.setPos(x, y, snapped);
