@@ -24,7 +24,14 @@ export default class Crosshair {
     g.appendChild(this.el);
   }
 
-  setPos = (x, y, optSnapped) => {
+  getCursorXY = () => {
+    const x = parseFloat(this.cursor.getAttribute('cx'));
+    const y = parseFloat(this.cursor.getAttribute('cy'));
+
+    return { x, y };
+  }
+
+  setCursorXY = (x, y, optSnapped) => {
     this.v.setAttribute('x1', x);
     this.v.setAttribute('x2', x);
     

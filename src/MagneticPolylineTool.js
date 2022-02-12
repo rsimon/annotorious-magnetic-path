@@ -4,10 +4,7 @@ import { addClass } from '@recogito/annotorious/src/util/SVG';
 
 import Crosshair from './Crosshair';
 import { chunk, getImageData } from './Util';
-
-/*
 import MagneticPolyline from './MagneticPolyline';
-*/
 
 export default class MagneticPolylineTool extends Tool {
 
@@ -23,16 +20,9 @@ export default class MagneticPolylineTool extends Tool {
     this.keypoints = [];
     this.keypointIndex = null;
 
-    // TODO
+    // Crosshair with snapping cursor
     this.crosshair = new Crosshair(g, env);
     
-    /*
-    document.createElementNS(SVG_NAMESPACE, 'circle');
-    this.crosshair.setAttribute('r', '3');
-    this.crosshair.setAttribute('fill', 'red');
-    g.appendChild(this.crosshair);
-    */
-
     // All computer vision happens in a background worker
     this.cv = new Worker(new URL('./CVWorker.js', import.meta.url));
 
@@ -42,22 +32,23 @@ export default class MagneticPolylineTool extends Tool {
       image: getImageData(this.env.image)
     });
 
-    // TODO response message handlers
+    this.attachListeners({ 
+      mouseMove: this.onMouseMove
+    });
+
+    // CV response message handlers
     this.cv.onmessage = msg => {
       const { type } = msg.data;
       if (type === 'keypoints') {
         this.loadKeypoints(msg.data.result);
+      } else if (type === 'scissorsInitialized') {
+        // TODO cursor state!
+        console.log('Scissors initialized');
+      } else if (type === 'path') {
+        if (this.rubberband)
+          this.rubberband.setPath(msg.data.path);
       }
     };
-
-    this.attachListeners({ mouseMove: this.onMouseMove });
-
-    /*
-    this.scissors = new cv.segmentation_IntelligentScissorsMB();
-    this.scissors.setEdgeFeatureCannyParameters(32, 100);
-    this.scissors.setGradientMagnitudeMaxLimit(200);
-    this.scissors.applyImage(img);
-    */
   }
 
   loadKeypoints = buffer => {
@@ -78,74 +69,42 @@ export default class MagneticPolylineTool extends Tool {
     console.log('Keypoints loaded'); 
   }
 
-  startDrawing = (x, y) => {
-    const w = this.env.image.naturalWidth;
-    const h = this.env.image.naturalHeight;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(this.env.image, 0, 0);
+  startDrawing = () => {
+    const { x, y } = this.crosshair.getCursorXY();
     
-    this.queue.postMessage({
-      action: 'buildMap',
-      x, y,
-      image: ctx.getImageData(0, 0, w, h)
-    });
-    
-    /*
-    this.queue.onmessage = msg => {
-      console.log('queue response', msg);
-    };
-    */
+    this.rubberband = new MagneticPolyline([x, y], this.g);
+    this.svg.addEventListener('mouseup', this.onMouseUp);
 
-    // this.scissors.buildMap(new cv.Point(x, y));
-    
-    /*
-    console.timeEnd('Building map');
-   
-    this.attachListeners({
-      mouseMove: this.onMouseMove,
-      mouseUp: this.onMouseUp
-    });
-
-    this.rubberband = new MagneticPolyline([x, y], this.scissors, this.g, this.env);
-    */
+    this.cv.postMessage({ action: 'startScissors', x, y });
   }
 
   stop = () => {
     if (this.rubberband) {
       this.rubberband.destroy();
       this.rubberband = null;
+
+      this.svg.removeEventListener('mouseup', this.onMouseUp);
     }
   }
 
   onMouseMove = (x, y) => {
     if (this.rubberband) {
-      this.crosshair.setPos(x, y);
-
-      // Use magnetic scissors
-      // this.rubberband.dragTo([x, y]);
+      this.crosshair.setCursorXY(x, y);
+      this.rubberband.dragTo([x, y]);
+      this.cv.postMessage({ action: 'getPath', x, y });
     } else if (this.keypointIndex) {
       // Snap to closest keypoint
       const closest = this.keypointIndex.neighbors(x, y, 1, 20);
       const snapped = closest.length > 0 && this.keypoints[closest[0]];
 
-      this.crosshair.setPos(x, y, snapped);
+      this.crosshair.setCursorXY(x, y, snapped);
+    } else {
+      this.crosshair.setCursorXY(x, y);
     }
   }
 
   onMouseUp = () => {
-    this.rubberband.onClick();
-
-    const [x, y] = this.rubberband.points[this.rubberband.points.length - 1];
-    
-    console.time('Building map'); 
-    this.scissors.buildMap(new cv.Point(x, y));
-    console.timeEnd('Building map');
-
+    this.rubberband?.onClick();
   }
 
   get isDrawing() {
