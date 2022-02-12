@@ -1,4 +1,5 @@
 import Tool from '@recogito/annotorious/src/tools/Tool';
+import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 
 import { chunk, getImageData } from './Util';
 
@@ -17,6 +18,12 @@ export default class MagneticPolylineTool extends Tool {
     // Magnetic keypoints the mouse will snap to
     this.keypoints = [];
 
+    // TODO
+    this.crosshair = document.createElementNS(SVG_NAMESPACE, 'circle');
+    this.crosshair.setAttribute('r', '3');
+    this.crosshair.setAttribute('fill', 'red');
+    g.appendChild(this.crosshair);
+
     // All computer vision happens in a background worker
     this.cv = new Worker(new URL('./CVWorker.js', import.meta.url));
 
@@ -34,6 +41,8 @@ export default class MagneticPolylineTool extends Tool {
       }
     };
 
+    this.attachListeners({ mouseMove: this.onMouseMove });
+
     /*
     this.scissors = new cv.segmentation_IntelligentScissorsMB();
     this.scissors.setEdgeFeatureCannyParameters(32, 100);
@@ -48,6 +57,24 @@ export default class MagneticPolylineTool extends Tool {
       .map(([x,y]) => ({x, y}));
     
     console.log('Keypoints loaded'); 
+  }
+
+  getClosestKeypoint = (x, y) => {
+    
+    // TODO optimize with a 2D index!
+
+    const dist = kp => 
+      Math.pow(kp.x - x, 2) + Math.pow(kp.y - y, 2);
+
+    if (this.keypoints.length > 0) {
+      const distances = this.keypoints.map(kp => {
+        const d = dist(kp);
+        return { ...kp, d };
+      });
+
+      distances.sort((a,b) => a.d - b.d);
+      return distances[0];
+    }
   }
 
   startDrawing = (x, y) => {
@@ -94,8 +121,20 @@ export default class MagneticPolylineTool extends Tool {
     }
   }
 
-  onMouseMove = (x, y) =>
-    this.rubberband.dragTo([x, y]);
+  onMouseMove = (x, y) => {
+    if (this.rubberband) {
+      // Use magnetic scissors
+      // this.rubberband.dragTo([x, y]);
+    } else {
+      // Snap to closest keypoint
+      const closest = this.getClosestKeypoint(x, y);
+      if (closest) {
+        // TODO 
+        this.crosshair.setAttribute('cx', closest.x);
+        this.crosshair.setAttribute('cy', closest.y);
+      }
+    }
+  }
 
   onMouseUp = () => {
     this.rubberband.onClick();
