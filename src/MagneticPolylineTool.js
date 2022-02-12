@@ -1,6 +1,7 @@
 import Tool from '@recogito/annotorious/src/tools/Tool';
-import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
+import { addClass } from '@recogito/annotorious/src/util/SVG';
 
+import Crosshair from './Crosshair';
 import { chunk, getImageData } from './Util';
 
 /*
@@ -12,6 +13,8 @@ export default class MagneticPolylineTool extends Tool {
   constructor(g, config, env) {
     super(g, config, env);
 
+    addClass(g.closest('svg'), 'no-cursor');
+
     // The 'rubberband' magnetic polyline
     this.rubberband = null;
 
@@ -19,10 +22,14 @@ export default class MagneticPolylineTool extends Tool {
     this.keypoints = [];
 
     // TODO
-    this.crosshair = document.createElementNS(SVG_NAMESPACE, 'circle');
+    this.crosshair = new Crosshair(g, env);
+    
+    /*
+    document.createElementNS(SVG_NAMESPACE, 'circle');
     this.crosshair.setAttribute('r', '3');
     this.crosshair.setAttribute('fill', 'red');
     g.appendChild(this.crosshair);
+    */
 
     // All computer vision happens in a background worker
     this.cv = new Worker(new URL('./CVWorker.js', import.meta.url));
@@ -122,16 +129,18 @@ export default class MagneticPolylineTool extends Tool {
   }
 
   onMouseMove = (x, y) => {
+    this.crosshair.setPos(x, y);
+
     if (this.rubberband) {
       // Use magnetic scissors
       // this.rubberband.dragTo([x, y]);
     } else {
       // Snap to closest keypoint
-      const closest = this.getClosestKeypoint(x, y);
+      const closest = null; // this.getClosestKeypoint(x, y);
       if (closest) {
         // TODO 
-        this.crosshair.setAttribute('cx', closest.x);
-        this.crosshair.setAttribute('cy', closest.y);
+        this.crosshair.setPos(x, y); // closest.x);
+        // this.crosshair.setAttribute('cy', closest.y);
       }
     }
   }

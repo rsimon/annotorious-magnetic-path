@@ -11,3 +11,16 @@
   }
 
 }
+
+.a9s-annotationlayer.no-cursor {
+  cursor:none !important;
+
+  * {
+    cursor:none !important;
+  }
+}
+
+.a9s-crosshair {
+  stroke-width:1px;
+  stroke:rgba(0, 0, 0, 0.65);
+}
