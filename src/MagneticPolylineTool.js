@@ -1,24 +1,9 @@
 import Tool from '@recogito/annotorious/src/tools/Tool';
 
-// import cv from '@techstark/opencv-js';
-
-// import jsfeat from 'jsfeat';
+import { chunk, getImageData } from './Util';
 
 /*
 import MagneticPolyline from './MagneticPolyline';
-
-const chunk = (array, size) => {	
-  const chunked_arr = [];	
-
-  let index = 0;	
-  while (index < array.length) {	
-      chunked_arr.push(array.slice(index, size + index));	
-      index += size;	
-  }	
-
-  return chunked_arr;	
-}
-
 */
 
 export default class MagneticPolylineTool extends Tool {
@@ -29,70 +14,40 @@ export default class MagneticPolylineTool extends Tool {
     // The 'rubberband' magnetic polyline
     this.rubberband = null;
 
-    this.queue = new Worker(new URL('./WorkerQueue.js', import.meta.url));
+    // Magnetic keypoints the mouse will snap to
+    this.keypoints = [];
 
-    this.queue.onmessage = msg => {
-      console.log('queue response', msg);
-    };
-    
-    /* Init OpenCV magic
-    cv.onRuntimeInitialized = () => {
-      */
+    // All computer vision happens in a background worker
+    this.cv = new Worker(new URL('./CVWorker.js', import.meta.url));
 
-      // const img = cv.imread('map');
-      // 
-      // // const img = new cv.Mat();
-      // // cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
-// 
-      // const dst = new cv.Mat();
-			// cv.cvtColor(img, dst, cv.COLOR_RGB2GRAY.value, 0);
-      
-      /*
-      const img = cv.imread('map');
-      const greyscale = new cv.Mat();
-      // You can try more different parameters
-      cv.cvtColor(img, greyscale, cv.COLOR_RGB2GRAY);
+    // Init the background CV pipeline
+    this.cv.postMessage({
+      action: 'init',
+      image: getImageData(this.env.image)
+    });
 
-
-      const dst = new cv.Mat();
-      
-      /*
-      const blockSize = 2;
-      const apertureSize = 3;
-      const k = 0.05;
-      */
-
-      /*
-      let kp = new cv.KeyPointVector();
-
-      const fast = new cv.FastFeatureDetector(); // null, null, cv.FastFeatureDetector_TYPE_5_8);
-      // fast.setNonmaxSuppression(false);
-      fast.setThreshold(20);
-
-      fast.detect(img, kp);
-
-      cv.imshow('out', img);
-
-      const canvas = document.getElementById('out');
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = 'red';
-
-      for (let i=0; i<kp.size(); i++) {
-        const { x, y } = kp.get(i).pt;
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, 2 * Math.PI);
-        ctx.fill();
+    // TODO response message handlers
+    this.cv.onmessage = msg => {
+      const { type } = msg.data;
+      if (type === 'keypoints') {
+        this.loadKeypoints(msg.data.result);
       }
-      */
+    };
 
-      /*
+    /*
+    this.scissors = new cv.segmentation_IntelligentScissorsMB();
+    this.scissors.setEdgeFeatureCannyParameters(32, 100);
+    this.scissors.setGradientMagnitudeMaxLimit(200);
+    this.scissors.applyImage(img);
+    */
+  }
 
-      this.scissors = new cv.segmentation_IntelligentScissorsMB();
-      this.scissors.setEdgeFeatureCannyParameters(32, 100);
-      this.scissors.setGradientMagnitudeMaxLimit(200);
-      this.scissors.applyImage(img);
-      */
-    // }
+  loadKeypoints = buffer => {
+    // const arr = [ ...buffer ];
+    this.keypoints = chunk(new Uint16Array(buffer), 2)
+      .map(([x,y]) => ({x, y}));
+    
+    console.log('Keypoints loaded'); 
   }
 
   startDrawing = (x, y) => {
