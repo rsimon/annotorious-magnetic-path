@@ -1,3 +1,4 @@
+import Flatbush from 'flatbush';
 import Tool from '@recogito/annotorious/src/tools/Tool';
 import { addClass } from '@recogito/annotorious/src/util/SVG';
 
@@ -20,6 +21,7 @@ export default class MagneticPolylineTool extends Tool {
 
     // Magnetic keypoints the mouse will snap to
     this.keypoints = [];
+    this.keypointIndex = null;
 
     // TODO
     this.crosshair = new Crosshair(g, env);
@@ -59,10 +61,20 @@ export default class MagneticPolylineTool extends Tool {
   }
 
   loadKeypoints = buffer => {
-    // const arr = [ ...buffer ];
-    this.keypoints = chunk(new Uint16Array(buffer), 2)
+    const keypoints = chunk(new Uint16Array(buffer), 2)
       .map(([x,y]) => ({x, y}));
+
+    const index = new Flatbush(keypoints.length);
+
+    for (const p of keypoints) {
+      index.add(p.x, p.y, p.x, p.y);
+    }
     
+    index.finish();
+
+    this.keypoints = keypoints;
+    this.keypointIndex = index;
+
     console.log('Keypoints loaded'); 
   }
 
@@ -129,19 +141,17 @@ export default class MagneticPolylineTool extends Tool {
   }
 
   onMouseMove = (x, y) => {
-    this.crosshair.setPos(x, y);
-
     if (this.rubberband) {
+      this.crosshair.setPos(x, y);
+
       // Use magnetic scissors
       // this.rubberband.dragTo([x, y]);
-    } else {
+    } else if (this.keypointIndex) {
       // Snap to closest keypoint
-      const closest = null; // this.getClosestKeypoint(x, y);
-      if (closest) {
-        // TODO 
-        this.crosshair.setPos(x, y); // closest.x);
-        // this.crosshair.setAttribute('cy', closest.y);
-      }
+      const closest = this.keypointIndex.neighbors(x, y, 1);
+      const snapped = closest.length > 0 && this.keypoints[closest[0]];
+
+      this.crosshair.setPos(x, y, snapped);
     }
   }
 
