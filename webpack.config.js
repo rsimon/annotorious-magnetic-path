@@ -10,8 +10,8 @@ const resolveAppPath = relativePath => path.resolve(APP_DIR, relativePath);
 module.exports = {
   entry: resolveAppPath('src'),
   output: {
-    filename: 'annotorious-magnetic-polyline.js',
-    library: ['Annotorious', 'MagneticPolyline'],
+    filename: 'annotorious-magnetic-path.js',
+    library: ['Annotorious', 'MagneticPath'],
     libraryTarget: 'umd',
     libraryExport: 'default'
   },

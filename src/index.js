@@ -1,11 +1,11 @@
-import MagneticPolylineTool from './MagneticPolylineTool';
+import MagneticPathTool from './MagneticPathTool';
 
-import './MagneticPolyline.scss';
+import './MagneticPath.scss';
 
-const MagneticPolylinePlugin = anno => {
+const MagneticPathPlugin = anno => {
 
-  anno.addDrawingTool(MagneticPolylineTool);
+  anno.addDrawingTool(MagneticPathTool);
   
 }
 
-export default MagneticPolylinePlugin;
+export default MagneticPathPlugin;

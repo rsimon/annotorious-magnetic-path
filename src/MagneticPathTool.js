@@ -4,16 +4,16 @@ import { addClass } from '@recogito/annotorious/src/util/SVG';
 
 import Crosshair from './Crosshair';
 import { chunk, getImageData } from './Util';
-import MagneticPolyline from './MagneticPolyline';
+import MagneticPath from './MagneticPath';
 
-export default class MagneticPolylineTool extends Tool {
+export default class MagneticPathTool extends Tool {
 
   constructor(g, config, env) {
     super(g, config, env);
 
     addClass(g.closest('svg'), 'no-cursor');
 
-    // The 'rubberband' magnetic polyline
+    // The 'rubberband' magnetic path
     this.rubberband = null;
 
     // Magnetic keypoints the mouse will snap to
@@ -72,7 +72,7 @@ export default class MagneticPolylineTool extends Tool {
   startDrawing = () => {
     const { x, y } = this.crosshair.getCursorXY();
     
-    this.rubberband = new MagneticPolyline([x, y], this.g);
+    this.rubberband = new MagneticPath([x, y], this.g);
     this.svg.addEventListener('mousedown', this.onMouseUp);
 
     this.cv.postMessage({ action: 'startScissors', x, y });
@@ -121,8 +121,8 @@ export default class MagneticPolylineTool extends Tool {
 
 }
 
-MagneticPolylineTool.identifier = 'magnetic-polyline';
+MagneticPathTool.identifier = 'magnetic-path';
 
-MagneticPolylineTool.supports = annotation => {
+MagneticPathTool.supports = annotation => {
   // TODO
 }

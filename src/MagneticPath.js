@@ -6,7 +6,7 @@ const pointsToPath = points => {
     rest.map(([x,y]) => `L ${x} ${y}`).join(' ');
 }
 
-export default class MagneticPolyline {
+export default class MagneticPath {
 
   constructor(origin, g) {
     // Array of points, confirmed path 
