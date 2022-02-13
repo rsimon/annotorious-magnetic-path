@@ -1,13 +1,5 @@
 import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 
-/* Temporary hack
-const getPoints = d => {
-  const tmp = d.replace('M', 'L');
-  const coords = tmp.split('L').map(str => str.trim()).filter(str => str);
-  return coords.map(xy => xy.split(' ').map(str => parseFloat(str)));
-}
-*/
-
 const pointsToPath = points => {
   const [[x, y], ...rest] = points;
   return `M ${x} ${y} ` +
