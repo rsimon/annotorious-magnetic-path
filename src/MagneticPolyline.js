@@ -44,13 +44,22 @@ export default class MagneticPolyline {
   }
 
   redraw = () => {
-    const d = pointsToPath(this.draftPoints);
-    this.draftPath.setAttribute('d', d);
+    if (this.confirmedPoints.length > 0) {
+      const confirmed = pointsToPath(this.confirmedPoints);
+      this.confirmedPath.setAttribute('d', confirmed);
+    }
+
+    const draft = pointsToPath(this.draftPoints);
+    this.draftPath.setAttribute('d', draft);
   }
 
   dragTo = xy => {
-    this.draftPoints = [...this.draftPoints, xy];
-    this.redraw();
+    // As long as there is no computed path,
+    // just connect draft start + mouse pos
+    if (this.draftPoints.length < 3) {
+      this.draftPoints = [ this.draftPoints[0], xy];
+      this.redraw();
+    }
   }
 
   setDraftPath = points => {
@@ -59,15 +68,8 @@ export default class MagneticPolyline {
   }
 
   onClick = () => {
-    /*
-    const [ _, ...nextLeg] = getPoints(this.ghost.getAttribute('d'));
-
-    console.log(nextLeg);
-
-    this.points = [...this.points, ...nextLeg];
-    
-    // this.completed.setAttribute('d', toPath(this.points.map(arr => ({ x: arr[0], y: arr[1] }))));
-    */
+    this.confirmedPoints = [ ...this.confirmedPoints, ...this.draftPoints ];
+    this.redraw();
   }
 
 }

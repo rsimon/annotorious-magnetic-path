@@ -105,6 +105,9 @@ export default class MagneticPolylineTool extends Tool {
 
   onMouseUp = () => {
     this.rubberband?.onClick();
+
+    const { x, y } = this.crosshair.getCursorXY();
+    this.cv.postMessage({ action: 'startScissors', x, y });
   }
 
   get isDrawing() {
