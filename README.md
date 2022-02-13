@@ -1,11 +1,15 @@
 # Annotorious Magnetic Path
 
-A plugin that adds a _magnetic pen_-style path selection tool to [Annotorious](https://annotorious.com).
+A for [Annotorious](https://annotorious.com) that adds a __magnetic pen__-style path selection tool. 
 
-Uses the excellent [OpenCV.js intelligent scissors implementation](https://docs.opencv.org/4.5.5/d9/df5/tutorial_js_intelligent_scissors.html) 
-and the [Simplify.js](https://github.com/mourner/simplify-js/) polyline simplification library under the hood.
+Uses [OpenCV.js](https://docs.opencv.org/4.5.5/d5/d10/tutorial_js_root.html), [Flatbush](https://github.com/mourner/flatbush) 
+and [Simplify.js](https://github.com/mourner/simplify-js/) under the hood.
 
 __CURRENTLY UNDER DEVELOPMENT__
+
+## Development
+
+Run `npm install` and `npm start`. To build the distribution, run `npm run build`.
 
 ## License
 
