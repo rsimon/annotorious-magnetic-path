@@ -28,12 +28,6 @@ const detectCorners = (img, optThreshold) => {
   return arr;
 }
 
-const toPath = points => {
-  const [first, ...rest] = points;
-  return `M ${first.x} ${first.y} ` +
-    rest.map(({x,y}) => `L ${x} ${y}`).join(' ');
-}
-
 const getPath = (x, y) => {
   const contour = new cv.Mat();
   scissors.getContour(new cv.Point(x, y), contour);
@@ -41,8 +35,8 @@ const getPath = (x, y) => {
   const points = chunk(contour.data32S, 2)
     .map(xy => ({ x: xy[0], y: xy[1] }));
 
-  const simplified = simplify(points, 3.5, true);
-  return toPath(simplified);
+  return simplify(points, 3.5, true)
+   .map(({x, y}) => ([x, y]));
 }
 
 /**

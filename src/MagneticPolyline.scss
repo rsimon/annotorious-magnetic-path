@@ -1,13 +1,16 @@
-.a9s-magnetic-polyline {
+.a9s-selection.a9s-magnetic-path {
 
-  .a9s-magnetic-polyline-marker {
-    cursor:none;
-    
-    line {
-      stroke-width:2px;
-      stroke:#000;
-    }    
-  
+  .a9s-magnetic-path-confirmed {
+    fill:none;
+    stroke:#0000ff;
+    stroke-width:4px;
+  }
+
+  .a9s-magnetic-path-draft {
+    stroke:rgba(255, 96, 96, 0.9);
+    fill:none;
+    stroke-width:4px;
+    stroke-dasharray:10 6;
   }
 
 }

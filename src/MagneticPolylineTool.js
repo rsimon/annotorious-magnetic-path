@@ -46,7 +46,7 @@ export default class MagneticPolylineTool extends Tool {
         console.log('Scissors initialized');
       } else if (type === 'path') {
         if (this.rubberband)
-          this.rubberband.setPath(msg.data.path);
+          this.rubberband.setDraftPath(msg.data.path);
       }
     };
   }
@@ -73,7 +73,7 @@ export default class MagneticPolylineTool extends Tool {
     const { x, y } = this.crosshair.getCursorXY();
     
     this.rubberband = new MagneticPolyline([x, y], this.g);
-    this.svg.addEventListener('mouseup', this.onMouseUp);
+    this.svg.addEventListener('mousedown', this.onMouseUp);
 
     this.cv.postMessage({ action: 'startScissors', x, y });
   }
