@@ -71,11 +71,20 @@ export default class MagneticPathTool extends Tool {
 
   startDrawing = () => {
     const { x, y } = this.crosshair.getCursorXY();
-    
-    this.rubberband = new MagneticPath([x, y], this.g);
-    this.svg.addEventListener('mousedown', this.onMouseUp);
 
     this.cv.postMessage({ action: 'startScissors', x, y });
+
+    this.svg.addEventListener('mousedown', this.onMouseUp);
+
+    this.rubberband = new MagneticPath([x, y], this.g, this.config, this.env);
+    
+    this.rubberband.on('close', ({ shape, selection }) => {
+      console.log('done', selection);
+      shape.annotation = selection;
+      this.emit('complete', shape);  
+      this.stop();
+    });
+
   }
 
   stop = () => {
